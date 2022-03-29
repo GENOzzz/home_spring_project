@@ -104,16 +104,16 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public String goProfile(HttpServletRequest req){
+    public String goProfile(HttpServletRequest req,Model model){
         HttpSession session= req.getSession();
         log.info("Member={}",session.getAttribute("member"));
 
         Member nowMember =(Member) session.getAttribute("member");
-        session.setAttribute("id",nowMember.getId());
-        session.setAttribute("name",nowMember.getName());
-        session.setAttribute("email",nowMember.getEmail());
+        model.addAttribute("id",nowMember.getId());
+        model.addAttribute("name",nowMember.getName());
+        model.addAttribute("email",nowMember.getEmail());
 
-        log.info("MemberId={},name={},email={}",session.getAttribute("id"),session.getAttribute("name"),session.getAttribute("email"));
+        log.info("MemberId={},name={},email={}",model.getAttribute("id"),model.getAttribute("name"),model.getAttribute("email"));
         return "members/profile";
 
     }
