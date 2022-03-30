@@ -23,21 +23,29 @@ public class MemberController {
 
     @Autowired
     MemberService memberService;
+    
+//    초기화면
+    @GetMapping(value = "/")
+    public String signupForm(){
+        return "members/signup";
+    }
+
+    @GetMapping(value = {"/boards/**","/mains/**"})
+    public String memberCheck(HttpServletRequest req){
+        HttpSession session = req.getSession();
+        if(session.getAttribute("member")==null){
+            return "members/noMember";
+        }
+        else {
+            return "redirect:";
+        }
+    }
 
     @GetMapping("/main")
     public String mainUP(){
         return "mains/main";
     }
 
-    @GetMapping("/main2")
-    public String mainUP2(){
-        return "mains/main2";
-    }
-
-    @GetMapping("/")
-    public String signupForm(){
-        return "members/signup";
-    }
 
 //    회원가입
     @PostMapping("/signup")
@@ -89,7 +97,7 @@ public class MemberController {
         HttpSession session = req.getSession();
         if(memberService.loginDO(id,pw,model)){
             session.setAttribute("member",model.getAttribute("member"));
-            return "mains/main";
+            return "redirect:/main";
         }else {
             return "members/login";
         }
@@ -99,23 +107,26 @@ public class MemberController {
 //    로그아웃
     @GetMapping("/logout")
     public String logoutDO(HttpSession session){
+        System.out.println("로그아웃!");
         session.invalidate();
         return "redirect:/";
     }
 
+//    프로필
     @GetMapping("/profile")
     public String goProfile(HttpServletRequest req,Model model){
         HttpSession session= req.getSession();
         log.info("Member={}",session.getAttribute("member"));
 
         Member nowMember =(Member) session.getAttribute("member");
-        model.addAttribute("id",nowMember.getId());
-        model.addAttribute("name",nowMember.getName());
-        model.addAttribute("email",nowMember.getEmail());
-
-        log.info("MemberId={},name={},email={}",model.getAttribute("id"),model.getAttribute("name"),model.getAttribute("email"));
+        session.setAttribute("id",nowMember.getId());
+        session.setAttribute("name",nowMember.getName());
+        session.setAttribute("phone",nowMember.getPhone());
+        session.setAttribute("email",nowMember.getEmail());
+        session.setAttribute("birthday",nowMember.getBirthday());
+        session.setAttribute("address",nowMember.getAddress());
+        log.info("id={}",session.getAttribute("id"));
         return "members/profile";
-
     }
 
 }
